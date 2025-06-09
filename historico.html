@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Histórico Profissional - Fagner Caeres</title>
+  <link rel="stylesheet" href="css/historico.css">
+</head>
+<body style="background: black;">
+  <canvas id="atom-background"></canvas>
+
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+  <nav id="sidebar">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="#ano2009">2009</a></li>
+      <li><a href="#ano2013">2013</a></li>
+      <li><a href="#ano2016">2016</a></li>
+      <li><a href="#ano2022">2022</a></li>
+      <li><a href="#ano2023">2023</a></li>
+      <li><a href="#ano2024">2024</a></li>
+      <li><a href="#ano2025">2025</a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+    <section class="ano" id="ano2009">
+      <h2>2009 - Bombas FAL</h2>
+      <p class="texto">Fresador mecânico<br>Torneiro Mecânico/CNC<br>Solda<br>Montagem e manutenção de bombas centrífugas, motores elétricos e máquinas de usinagem em geral</p>
+    </section>
+    <section class="ano" id="ano2013">
+      <h2>2013 - Alta Conexão</h2>
+      <p class="texto">Projeto de cabeamento estruturado<br>Projeto e montagem de sistema CFTV<br>Projeto e montagem de sistemas fotovoltaicos</p>
+    </section>
+    <section class="ano" id="ano2016">
+      <h2>2016 - Autônomo</h2>
+      <p class="texto">Projetos de cabeamento estruturado, condomínios e compartilhamento de infraestrutura<br>Projetos e montagem de sistemas elétricos de baixa tensão e automação residencial</p>
+    </section>
+
+    <section class="ano" id="ano2022">
+      <h2>2022 - Halliburton</h2>
+      <p class="texto">
+        Março: Realizei meu primeiro embarque onshore, no interior do Maranhão, atendendo a operações da Eneva.<br>
+        Foi meu primeiro contato com uma planta de Well Test e com ferramentas do sistema SDAS.<br><br>
+        Julho: Assumi a posição de Shop Leader de MPD, com menos de um ano de empresa.<br>
+        Nesse período, foquei em automatização e controle das necessidades do setor.<br>
+        Meu planejamento de médio e longo prazo era estabelecer maior controle sobre os gastos, bem como elaborar estratégias para planejamento e previsão de despesas.<br><br>
+        Outubro: Meu primeiro embarque offshore.
+      </p>
+
+      <div class="grafico">
+        <h3>Planilha de Suavização Exponencial</h3>
+        <img src="Img/Previsao_Consumo_Junho.png" alt="Planilha de Suavização Exponencial" class="imagem-tabela">
+      </div>
+    </section>
+
+    <section class="ano" id="ano2023">
+      <h2>2023 - Halliburton</h2>
+      <p class="texto">Comparações e análise dos embarques e trabalhos realizados ao longo do ano.</p>
+
+      <div class="grafico-grid">
+        <section class="grafico">
+          <h3>Embarques 2022 vs 2023</h3>
+          <canvas id="chartEmbarques" class="chart-canvas"></canvas>
+        </section>
+        <section class="grafico">
+          <h3>Serviços 2023</h3>
+          <canvas id="chartServicos" class="chart-canvas"></canvas>
+        </section>
+        <section class="grafico">
+          <h3>Sonda com mais embarques</h3>
+          <canvas id="chartSondas" class="chart-canvas"></canvas>
+        </section>
+        <section class="grafico">
+          <h3>Trabalhos Realizados</h3>
+          <canvas id="chartColunas" class="chart-canvas"></canvas>
+        </section>
+      </div>
+    </section>
+
+    <section class="ano" id="ano2024">
+      <h2>2024 - Halliburton</h2>
+      <p class="texto">Comparações e análise dos embarques, serviços e atividades realizadas durante o ano de 2024.</p>
+
+      <div class="grafico-grid">
+        <section class="grafico">
+          <h3>Embarques 2022 vs 2023 vs 2024</h3>
+          <canvas id="chartEmbarques2024" class="chart-canvas"></canvas>
+        </section>
+        <section class="grafico">
+          <h3>Serviços 2024 (MPD, SWT, HCT-CI)</h3>
+          <canvas id="chartServicos2024" class="chart-canvas"></canvas>
+        </section>
+        <section class="grafico">
+          <h3>Distribuição de embarques por sonda (2024)</h3>
+          <canvas id="chartSondas2024" class="chart-canvas"></canvas>
+        </section>
+        <section class="grafico">
+          <h3>Tipos de Trabalho Realizados em 2024</h3>
+          <canvas id="chartTiposTrabalho2024" class="chart-canvas"></canvas>
+        </section>
+      </div>
+    </section>
+
+    <section class="ano" id="ano2025">
+      <h2>2025 - Halliburton</h2>
+      <p class="texto">Análise dos embarques, tipos de serviço e atividades realizadas no ano de 2025.</p>
+
+      <div class="grafico-grid">
+        <section class="grafico">
+          <h3>Embarques 2022 vs 2023 vs 2024 vs 2025</h3>
+          <canvas id="chartEmbarques2025" class="chart-canvas"></canvas>
+        </section>
+
+        <section class="grafico">
+          <h3>Serviços 2025 (MPD)</h3>
+          <canvas id="chartServicos2025" class="chart-canvas"></canvas>
+        </section>
+
+        <section class="grafico">
+          <h3>Distribuição de embarques por sonda (2025)</h3>
+          <canvas id="chartSondas2025" class="chart-canvas"></canvas>
+        </section>
+
+        <section class="grafico">
+          <h3>Tipos de Trabalho Realizados em 2025</h3>
+          <canvas id="chartTiposTrabalho2025" class="chart-canvas"></canvas>
+        </section>
+      </div>
+    </section>
+
+      <p class="texto"></p>
+    </section>
+  </main>
+
+  <script src="js/som.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/charts-embarques.js"></script>
+  <script src="js/charts-servicos.js"></script>
+  <script src="js/charts-sondas.js"></script>
+  <script src="js/charts-colunas.js"></script>
+  <script src="js/chart-numembarque24.js"></script>
+  <script src="js/chart-servicos24.js"></script>
+  <script src="js/chart-sondas24.js"></script>
+  <script src="js/chart-tipos2024.js"></script>
+  <script src="js/chart-numembarque25.js"></script>
+  <script src="js/chart-servicos25.js"></script>
+  <script src="js/chart-sondas25.js"></script>
+<script src="js/chart-tipos2025.js"></script>
+  <script>
+    function toggleMenu() {
+      const nav = document.getElementById('sidebar');
+      const main = document.getElementById('main');
+      nav.classList.toggle('active');
+      main.classList.toggle('blurred');
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const text = entry.target.querySelector('.texto');
+        const title = entry.target.querySelector('h2');
+        if (entry.isIntersecting) {
+          text.classList.add('show');
+          title.classList.add('visible');
+        } else {
+          text.classList.remove('show');
+          title.classList.remove('visible');
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.ano').forEach(section => {
+      observer.observe(section);
+    });
+
+    const sections = Array.from(document.querySelectorAll('.ano'));
+    let currentIndex = 0;
+
+    function scrollToSection(index) {
+      if (index >= 0 && index < sections.length) {
+        currentIndex = index;
+        sections[index].scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    window.addEventListener('wheel', function (e) {
+      if (e.deltaY > 0 && currentIndex < sections.length - 1) {
+        scrollToSection(currentIndex + 1);
+      } else if (e.deltaY < 0 && currentIndex > 0) {
+        scrollToSection(currentIndex - 1);
+      } else if (e.deltaY < 0 && currentIndex === 0) {
+        window.location.href = 'index.html';
+      }
+    }, { passive: true });
+  </script>
+</body>
+</html>

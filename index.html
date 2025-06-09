@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apresentação Profissional - Fagner Caeres</title>
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+  <nav id="sidebar">
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="historico.html#ano2009">2009</a></li>
+      <li><a href="historico.html#ano2013">2013</a></li>
+      <li><a href="historico.html#ano2016">2016</a></li>
+      <li><a href="historico.html#ano2022">2022</a></li>
+      <li><a href="historico.html#ano2023">2023</a></li>
+      <li><a href="historico.html#ano2024">2024</a></li>
+      <li><a href="historico.html#ano2025">2025</a></li>
+    </ul>
+  </nav>
+  <div id="blur-container">
+    <canvas id="interactive-bg"></canvas>
+    <main id="main">
+      <section class="intro-section">
+        <div class="intro-card" id="introCard">
+          <h1>Fagner A. Caeres</h1>
+          <p>Field MPD Sup.</p>
+          <p>Técnico em Eletrotécnica</p>
+          <p>Eng. da Computação (Cursando)</p>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="js/particles.js"></script>
+  <script>
+    function toggleMenu() {
+      const nav = document.getElementById('sidebar');
+      const blurContainer = document.getElementById('blur-container');
+      const card = document.getElementById('introCard');
+      if (nav && blurContainer && card) {
+        nav.classList.toggle('active');
+        blurContainer.classList.toggle('blurred');
+        card.classList.toggle('moved');
+      }
+    }
+  </script>
+  <script>
+    let scrollTriggered = false;
+
+    window.addEventListener('wheel', function (e) {
+      if (e.deltaY > 0 && !scrollTriggered) {
+        scrollTriggered = true;
+        window.location.href = 'historico.html#ano2009';
+      }
+    }, { passive: true });
+  </script>
+
+</body>
+</html>
