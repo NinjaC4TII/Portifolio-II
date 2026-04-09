@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fagner Caeres | Especialista em Automação & IIoT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #000000;
+            --accent: #007bff;
+            --card-bg: rgba(15, 15, 15, 0.4);
+            /* Curva de animação personalizada para fluidez máxima */
+            --bezier: cubic-bezier(0.34, 1.56, 0.64, 1); 
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        #interactive-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 10% 10%, rgba(0, 123, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(100, 0, 255, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(15, 15, 15, 1) 0%, #000 100%);
+        }
+
+        section { padding: 100px 10%; display: flex; flex-direction: column; justify-content: center; min-height: 100vh; }
+        
+        .hero { text-align: center; }
+        .hero h1 { font-size: 3.5rem; letter-spacing: -1px; margin-bottom: 15px; }
+        .hero p { color: #aaa; font-size: 1.2rem; }
+
+        h2 { font-size: 2.2rem; margin-bottom: 40px; color: #fff; border-left: 4px solid var(--accent); padding-left: 20px; }
+
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 35px; 
+            margin-bottom: 60px;
+        }
+
+        /* --- FLIP CARDS REFINADOS --- */
+        .flip-card { 
+            background-color: transparent; 
+            height: 380px; 
+            perspective: 2000px; 
+        }
+
+        .flip-card-inner { 
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+            transition: transform 0.8s var(--bezier); /* Transição elástica e fluida */
+            transform-style: preserve-3d; 
+        }
+
+        .flip-card:hover .flip-card-inner { 
+            transform: rotateY(180deg) scale(1.02); /* Leve aumento para profundidade */
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            border-radius: 28px; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px; display: flex; flex-direction: column; justify-content: center;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .flip-card-front { background: var(--card-bg); align-items: center; text-align: center; }
+        .flip-card-back { 
+            background: rgba(8, 8, 8, 0.98); 
+            transform: rotateY(180deg); 
+            border-color: var(--accent);
+            align-items: flex-start;
+        }
+
+        .card-title { font-size: 1.6rem; margin-bottom: 8px; color: #fff; }
+        .card-subtitle { color: var(--accent); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1.5px; margin-bottom: 12px; }
+        .card-date { color: #666; font-size: 0.9rem; }
+
+        ul { list-style: none; width: 100%; }
+        li { font-size: 0.9rem; color: #ccc; margin-bottom: 12px; padding-left: 20px; position: relative; line-height: 1.5; }
+        li::before { content: "•"; position: absolute; left: 0; color: var(--accent); font-size: 1.2rem; top: -2px; }
+
+        /* Elementos Visuais */
+        .tech-stack { display: flex; gap: 15px; margin-top: 25px; flex-wrap: wrap; justify-content: center; }
+        .icon-small { width: 26px; height: 26px; opacity: 0.6; transition: 0.3s ease; }
+        .icon-small:hover { opacity: 1; transform: scale(1.2); }
+
+        .icon-social { width: 34px; height: 34px; filter: grayscale(100%); transition: 0.5s var(--bezier); margin: 0 15px; }
+        .icon-social:hover { filter: grayscale(0%); transform: translateY(-8px); }
+
+        .reveal { opacity: 0; transform: translateY(60px); transition: 1.4s var(--bezier); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } .flip-card { height: 420px; } }
+    </style>
+</head>
+<body>
+
+    <canvas id="interactive-bg"></canvas>
+
+    <main>
+        <section class="hero">
+            <h1 class="reveal">Fagner de Araujo Caeres</h1>
+            <p class="reveal"> Supervisor MPD & Cursando Engenharia da Computação</p>
+            <div class="reveal" style="margin-top: 30px;">
+                <a href="https://br.linkedin.com/in/fagner-araujo-caeres-a95b04128" target="_blank"><img src="icon/icons8-linkedin-94.png" class="icon-social" alt="LinkedIn"></a>
+                <a href="https://github.com/NinjaC4TII" target="_blank"><img src="icon/icons8-github-100.png" class="icon-social" alt="GitHub"></a>
+                <a href="https://wa.me/5522992093408" target="_blank"><img src="icon/icons8-whatsapp-logo-48.png" class="icon-social" alt="WhatsApp"></a>
+            </div>
+        </section>
+
+        <section id="experiencia">
+            <h2 class="reveal">Trajetória Profissional</h2>
+            <div class="grid">
+                
+                <div class="flip-card reveal">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <p class="card-subtitle">Halliburton</p>
+                            <h3 class="card-title">Supervisor de Campo MPD</h3>
+                            <p class="card-date">2022 – Atual</p>
+                            <div class="tech-stack">
+                                <img src="icon/icons8-docker-48.png" class="icon-small" title="Docker">
+                                <img src="icon/Node-Red.png" class="icon-small" title="Node-RED">
+                                <img src="icon/Lorawan.png" class="icon-small" title="LoRaWAN">
+                            </div>
+                        </div>
+                        <div class="flip-card-back">
+                            <ul>
+                                <li>Liderança em arquitetura IoT (LoRaWAN e Docker).</li>
+                                <li>Otimização de fluxos de dados via Node-RED.</li>
+                                <li>Introdução de Completação Inteligente.</li>
+                                <li>Redes: WITS, OPC UA, Modbus e Profibus.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flip-card reveal">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <p class="card-subtitle">Sistemas</p>
+                            <h3 class="card-title">Projetista Autônomo</h3>
+                            <p class="card-date">2015 – 2021</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <ul>
+                                <li>Design of Service (DOS) para operações MPD.</li>
+                                <li>Projetos de infraestrutura de rede e cabeamento.</li>
+                                <li>Dimensionamento de baixa tensão e eficiência.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flip-card reveal">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <p class="card-subtitle">Alta Conexão</p>
+                            <h3 class="card-title">Técnico de Manutenção</h3>
+                            <p class="card-date">2010 – 2014</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <ul>
+                                <li>Manutenção de infraestruturas de rede e sistemas.</li>
+                                <li>Instalação de sistemas de energia renovável.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="formacao">
+            <h2 class="reveal">Formação & Projetos</h2>
+            <div class="grid">
+                <div class="flip-card reveal">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <p class="card-subtitle">Educação [cite: 24]</p>
+                            <h3 class="card-title">Engenharia & Eletrotécnica [cite: 25, 26]</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <ul>
+                                <li>Engenharia da Computação – UCAM[cite: 25].</li>
+                                <li>Técnico em Eletrotécnica – CNEC[cite: 26].</li>
+                                <li>Inglês Técnico (Leitura e Manuais)[cite: 3].</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flip-card reveal">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <p class="card-subtitle">Tecnologia [cite: 27]</p>
+                            <h3 class="card-title">Automação & IoT [cite: 30]</h3>
+                            <div class="tech-stack">
+                                <img src="icon/icons8-python-100.png" class="icon-small" title="Python [cite: 31]">
+                                <img src="icon/icons8-linux-96.png" class="icon-small" title="Linux [cite: 30]">
+                            </div>
+                        </div>
+                        <div class="flip-card-back">
+                            <ul>
+                                <li>Well Control (Nível Supervisão)[cite: 28].</li>
+                                <li>Administração Linux (CentOS/RedHat)[cite: 30].</li>
+                                <li>Python aplicado à automação de tarefas[cite: 31].</li>
+                                <li>Experiência em Well Testing e Rig-ups[cite: 15, 18].</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- SISTEMA DE PARTÍCULAS ORIGINAL E FLUIDO ---
+        const canvas = document.getElementById('interactive-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const mouse = { x: null, y: null, radius: 200 };
+        const connectionDistance = 150;
+
+        window.addEventListener('mousemove', e => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.baseVx = this.vx;
+                this.baseVy = this.vy;
+            }
+            update() {
+                if (mouse.x != null) {
+                    let dx = this.x - mouse.x;
+                    let dy = this.y - mouse.y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < mouse.radius) {
+                        let force = (mouse.radius - dist) / mouse.radius;
+                        this.vx += (dx / dist) * force * 0.05;
+                        this.vy += (dy / dist) * force * 0.05;
+                    }
+                }
+                this.vx *= 0.98; this.vy *= 0.98;
+                this.vx += (this.baseVx - this.vx) * 0.03;
+                this.vy += (this.baseVy - this.vy) * 0.03;
+                this.x += this.vx; this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 100; i++) particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, i) => {
+                p.update(); p.draw();
+                for (let j = i + 1; j < particles.length; j++) {
+                    let dx = p.x - particles[j].x;
+                    let dy = p.y - particles[j].y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < connectionDistance) {
+                        ctx.strokeStyle = `rgba(255,255,255,${0.15 * (1 - dist / connectionDistance)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', init);
+        init(); animate();
+
+        // Reveal no Scroll
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

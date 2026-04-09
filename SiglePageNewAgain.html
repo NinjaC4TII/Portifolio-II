@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fagner Caeres | Supervisor MPD & Eng. de Computação</title>
+    <title>Fagner Caeres | Especialista em Automação & IIoT</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -44,7 +44,6 @@
             pointer-events: none;
         }
 
-        /* Estilo para ícones */
         .icon-small {
             width: 24px;
             height: 24px;
@@ -57,7 +56,6 @@
             filter: drop-shadow(0 0 8px var(--accent));
         }
 
-        /* Container de ícones abaixo do texto nos cards */
         .tech-stack { 
             margin-top: 15px; 
             display: flex; 
@@ -66,7 +64,6 @@
             align-items: center; 
         }
 
-        /* Ícones Sociais na Home */
         .home-socials {
             margin-top: 25px;
             display: flex;
@@ -122,10 +119,11 @@
 
         .hero { text-align: center; }
         .hero h1 { font-size: 3.5rem; letter-spacing: -1px; margin-bottom: 15px; }
+        .hero p { color: #aaa; font-size: 1.2rem; max-width: 800px; margin: 0 auto; }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 25px; margin-top: 40px;
         }
 
@@ -135,7 +133,20 @@
             border: 1px solid rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(8px);
             transition: 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
+        
+        .card:hover {
+            border-color: rgba(0, 123, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .card h3 { margin-bottom: 5px; }
+        .card ul { list-style: none; margin-top: 15px; }
+        .card li { color: #ccc; font-size: 0.9rem; margin-bottom: 8px; position: relative; padding-left: 15px; }
+        .card li::before { content: "→"; position: absolute; left: 0; color: var(--accent); }
 
         .reveal { opacity: 0; transform: translateY(40px); transition: 1.2s all ease; }
         .reveal.active { opacity: 1; transform: translateY(0); }
@@ -151,28 +162,27 @@
     <nav id="sidebar">
         <ul>
             <li><a href="#home" onclick="toggleMenu()">Início</a></li>
-            <li><a href="#experiencia" onclick="toggleMenu()">Experiência</a></li>
-            <li><a href="#projetos" onclick="toggleMenu()">Projetos</a></li>
+            <li><a href="#experiencia" onclick="toggleMenu()">Trajetória</a></li>
+            <li><a href="#competencias" onclick="toggleMenu()">Competências</a></li>
         </ul>
     </nav>
 
     <main>
         <section id="home" class="hero">
-            <h1 class="reveal">Fagner A. Caeres</h1>
-            <p class="reveal">Field MPD Supervisor & Graduando em Engenharia de Computação</p>
+            <h1 class="reveal">Fagner de Araujo Caeres</h1>
+            <p class="reveal">
+                Especialista em Automação e Operações de Poço com foco em Conectividade Industrial (IIoT) e Edge Computing.
+            </p>
             
             <div class="home-socials reveal">
                 <a href="https://br.linkedin.com/in/fagner-araujo-caeres-a95b04128" target="_blank">
                     <img src="icon/icons8-linkedin-94.png" class="icon-social" alt="LinkedIn">
                 </a>
-                <a href="https://www.instagram.com/SEU_INSTAGRAM" target="_blank">
-                    <img src="icon/icons8-instagram-48.png" class="icon-social" alt="Instagram">
-                </a>
-                <a href="https://wa.me/5522999999999" target="_blank">
-                    <img src="icon/icons8-whatsapp-logo-48.png" class="icon-social" alt="WhatsApp">
-                </a>
                 <a href="https://github.com/NinjaC4TII" target="_blank">
                     <img src="icon/icons8-github-100.png" class="icon-social" alt="GitHub">
+                </a>
+                <a href="https://wa.me/5522992093408" target="_blank">
+                    <img src="icon/icons8-whatsapp-logo-48.png" class="icon-social" alt="WhatsApp">
                 </a>
             </div>
         </section>
@@ -181,59 +191,68 @@
             <h2 class="reveal">Experiência Profissional</h2>
             <div class="grid">
                 <div class="card reveal">
-                    <h3>Halliburton</h3>
-                    <p style="color: var(--accent);">Field MPD Supervisor</p>
-                    <p style="color: #aaa; margin-top: 10px;">
-                        Experiencia em operações offshore perfuração Managed pressure drilling (MPD), Well Testing, workover e completação. 
-                        Análise técnica de dados operacionais em tempo real, gestão de segurança, reporte direto aos clientes.
-                    </p>
-                </div>
-                <div class="card reveal">
-                    <h3>Sistemas de Automação e Energia</h3>
-                    <p style="color: var(--accent);">Especialista Técnico</p>
-                    <p style="color: #aaa; margin-top: 10px;">
-                        Especialista em Rig-up de sistemas MPD e sensores com integração de protocolos industriais e redes: 
-                        WITS0, WITSML, Profibus, Modbus, Lorawan, MQTT.
-                    </p>
+                    <div>
+                        <h3>Halliburton</h3>
+                        <p style="color: var(--accent);">Supervisor de Campo MPD | 2022 – Atual</p>
+                        <ul>
+                            <li>Liderança na implementação de arquitetura IoT via LoRaWAN e Docker[cite: 11].</li>
+                            <li>Otimização de fluxos de dados em tempo real utilizando Node-RED[cite: 12].</li>
+                            <li>Introdução pioneira de Completação Inteligente integrando sistemas de fundo e superfície[cite: 13].</li>
+                            <li>Configuração de redes industriais (WITS, OPC UA, Modbus e Profibus)[cite: 14].</li>
+                        </ul>
+                    </div>
                     <div class="tech-stack">
-                        <img src="icon/modbus-seeklogo.svg" class="icon-small" title="Modbus">
-                        <img src="icon/mqtt-logo.svg" class="icon-small" title="MQTT">
-                        <img src="icon/Lorawan.png" class="icon-small" title="LoRaWAN">
                         <img src="icon/icons8-docker-48.png" class="icon-small" title="Docker">
                         <img src="icon/Node-Red.png" class="icon-small" title="Node-RED">
+                        <img src="icon/Lorawan.png" class="icon-small" title="LoRaWAN">
+                    </div>
+                </div>
+
+                <div class="card reveal">
+                    <div>
+                        <h3>Infraestrutura & Sistemas</h3>
+                        <p style="color: var(--accent);">Projetista Autônomo | 2015 – 2021</p>
+                        <ul>
+                            <li>Design de Service (DOS) para operações críticas de MPD e FMCD[cite: 16].</li>
+                            <li>Projetos de infraestrutura de rede e cabeamento estruturado[cite: 20].</li>
+                            <li>Dimensionamento de baixa tensão e eficiência energética[cite: 21].</li>
+                        </ul>
+                    </div>
+                    <div class="tech-stack">
+                        <img src="icon/modbus-seeklogo.svg" class="icon-small" title="Modbus">
+                        <img src="icon/icons8-linux-96.png" class="icon-small" title="Linux">
+                        <img src="icon/icons8-python-100.png" class="icon-small" title="Python">
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="projetos">
-            <h2 class="reveal">Projetos & Pesquisa</h2>
+        <section id="competencias">
+            <h2 class="reveal">Educação & Especialidades</h2>
             <div class="grid">
                 <div class="card reveal">
-                    <h3>Ecossistema Raspberry Pi</h3>
-                    <p style="color: #aaa;">
-                        Desenvolvimento de soluções portáteis para segurança de rede utilizando Linux, Raspberry Pi,
-                        containers Docker e scripts em Python. 
-                    </p>
-                    <div class="tech-stack">
-                        <img src="icon/icons8-linux-96.png" class="icon-small" title="Linux">
-                        <img src="icon/icons8-raspberry-pi-96.png" class="icon-small" title="Raspberry Pi">
-                        <img src="icon/icons8-docker-48.png" class="icon-small" title="Docker">
-                        <img src="icon/icons8-python-100.png" class="icon-small" title="Python">
-                    </div>
+                    <h3>Formação Acadêmica</h3>
+                    <p style="color: #aaa;">Engenharia da Computação (Cursando)</p>
+                    <p style="color: #666; font-size: 0.85rem;">Universidade Candido Mendes [cite: 25]</p>
+                    <p style="color: #aaa; margin-top: 10px;">Técnico em Eletrotécnica</p>
+                    <p style="color: #666; font-size: 0.85rem;">CNEC [cite: 26]</p>
                 </div>
+
                 <div class="card reveal">
-                    <h3>Simulação de Escoamento</h3>
-                    <p style="color: #aaa;">
-                        Software para estudos desenvolvido para cálculos complexos de dinâmica de fluidos integrado a dispositivos IoT e servidores Linux.
+                    <h3>Certificações Offshore</h3>
+                    <ul>
+                        <li>Well Control (Nível Supervisão)[cite: 28].</li>
+                        <li>HUET & CBSP[cite: 28].</li>
+                        <li>Especialista em Rig-up de sistemas complexos[cite: 15, 32].</li>
+                    </ul>
+                </div>
+
+                <div class="card reveal">
+                    <h3>Stack Tecnológica</h3>
+                    <p style="color: #aaa; font-size: 0.9rem; line-height: 1.6;">
+                        Domínio em <strong>Edge Computing</strong> (Docker), automação em <strong>Python</strong>, 
+                        e administração de sistemas <strong>Linux</strong> (CentOS/RedHat)[cite: 30, 31].
                     </p>
-                    <div class="tech-stack">
-                        <img src="icon/icons8-python-100.png" class="icon-small" title="Python">
-                        <img src="icon/icons8-iot-100.png" class="icon-small" title="IoT">
-                        <img src="icon/icons8-centos-96.png" class="icon-small" title="CentOS">
-                        <img src="icon/icons8-debian-96.png" class="icon-small" title="Debian">
-                        <img src="icon/icons8-windows-96.png" class="icon-small" title="Windows">
-                    </div>
                 </div>
             </div>
         </section>
