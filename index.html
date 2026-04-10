@@ -492,59 +492,73 @@
         } catch(e) {}
     }
 
-    // --- CONTROLES DE MOUSE ---
-    canvas.addEventListener('click', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        if (!gameStarted) {
-            if (mouseX > canvas.width/2 - 70 && mouseX < canvas.width/2 + 70 &&
-                mouseY > canvas.height/2 - 25 && mouseY < canvas.height/2 + 25) {
-                initGame();
-            }
-        }
-        if (gameStarted && !gameActive && particles.length === 0) {
-            if (mouseX > canvas.width/2 - 70 && mouseX < canvas.width/2 + 70 &&
-                mouseY > canvas.height/2 + 100 && mouseY < canvas.height/2 + 150) {
-                initGame();
-            }
-        }
-    });
+    // --- CONTROLES UNIVERSAIS (MOUSE E TOQUE BLINDADOS) ---
+    // A linha mágica que avisa o celular para focar no jogo e não na rolagem da página
+    canvas.style.touchAction = 'none';
 
-    // --- CONTROLES DE TOQUE (MOBILE) ---
-    canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault(); 
+    function getPointerPos(e) {
         const rect = canvas.getBoundingClientRect();
-        const touchX = e.touches[0].clientX - rect.left;
-        const touchY = e.touches[0].clientY - rect.top;
+        const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
+        
+        // Essa conta garante a precisão exata do toque na tela
+        return {
+            x: (clientX - rect.left) * (canvas.width / rect.width),
+            y: (clientY - rect.top) * (canvas.height / rect.height)
+        };
+    }
+
+    let isDragging = false;
+
+    function handleInputDown(e) {
+        if (e.type === 'touchstart') e.preventDefault();
+        
+        const pos = getPointerPos(e);
 
         if (!gameStarted) {
-            if (touchX > canvas.width/2 - 70 && touchX < canvas.width/2 + 70 &&
-                touchY > canvas.height/2 - 25 && touchY < canvas.height/2 + 25) {
+            if (pos.x > canvas.width/2 - 70 && pos.x < canvas.width/2 + 70 &&
+                pos.y > canvas.height/2 - 25 && pos.y < canvas.height/2 + 25) {
                 initGame();
             }
         } else if (gameStarted && !gameActive && particles.length === 0) {
-            if (touchX > canvas.width/2 - 70 && touchX < canvas.width/2 + 70 &&
-                touchY > canvas.height/2 + 100 && touchY < canvas.height/2 + 150) {
+            if (pos.x > canvas.width/2 - 70 && pos.x < canvas.width/2 + 70 &&
+                pos.y > canvas.height/2 + 100 && pos.y < canvas.height/2 + 150) {
                 initGame();
             }
         } else if (gameActive) {
-            player.x = Math.max(25, Math.min(canvas.width - 25, touchX));
-            player.y = Math.max(25, Math.min(canvas.height - 25, touchY - 40));
+            isDragging = true;
+            player.x = Math.max(25, Math.min(canvas.width - 25, pos.x));
+            player.y = Math.max(25, Math.min(canvas.height - 25, pos.y - 40));
         }
-    }, { passive: false });
+    }
 
-    canvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        if (gameActive) {
-            const rect = canvas.getBoundingClientRect();
-            const touchX = e.touches[0].clientX - rect.left;
-            const touchY = e.touches[0].clientY - rect.top;
-            
-            player.x = Math.max(25, Math.min(canvas.width - 25, touchX));
-            player.y = Math.max(25, Math.min(canvas.height - 25, touchY - 40));
+    function handleInputMove(e) {
+        if (e.type === 'touchmove') e.preventDefault(); 
+        
+        if (gameActive && (isDragging || e.type === 'touchmove')) {
+            const pos = getPointerPos(e);
+            player.x = Math.max(25, Math.min(canvas.width - 25, pos.x));
+            // O '- 40' mantém a nave um pouco acima do dedo para você poder ver os tiros!
+            player.y = Math.max(25, Math.min(canvas.height - 25, pos.y - 40));
         }
-    }, { passive: false });
+    }
+
+    function handleInputUp(e) {
+        isDragging = false;
+    }
+
+    // Eventos de Mouse (Para jogar pelo PC arrastando o mouse)
+    canvas.addEventListener('mousedown', handleInputDown);
+    canvas.addEventListener('mousemove', handleInputMove);
+    canvas.addEventListener('mouseup', handleInputUp);
+    canvas.addEventListener('mouseleave', handleInputUp);
+
+    // Eventos de Toque (Para jogar pelo Celular)
+    canvas.addEventListener('touchstart', handleInputDown, { passive: false });
+    canvas.addEventListener('touchmove', handleInputMove, { passive: false });
+    canvas.addEventListener('touchend', handleInputUp);
+    canvas.addEventListener('touchcancel', handleInputUp);
+    // ------------------------------------------------------
 
     function drawBackgroundEffects() {
         let grad = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.4);
@@ -627,7 +641,6 @@
 
     function drawCatHUD() {
         if (catOpacity <= 0) return;
-        // PROTEÇÃO: Não tenta desenhar o gato se a imagem não tiver carregado
         if (!catImg.complete || catImg.width === 0) return; 
 
         ctx.save();
@@ -893,7 +906,6 @@
         drawBackgroundEffects();
 
         if (!gameStarted) {
-            // TEXTO RESPONSIVO: Fica com maximo de 50px no PC, mas encolhe no celular
             let titleSize = Math.min(50, canvas.width / 7); 
             ctx.fillStyle = "white"; ctx.textAlign = "center";
             ctx.font = "bold " + titleSize + "px Inter"; 
@@ -961,7 +973,6 @@
         });
 
         if (gameStarted && !gameActive && particles.length === 0) {
-            // TEXTO RESPONSIVO PARA O GAME OVER TAMBÉM
             let overSize = Math.min(40, canvas.width / 8); 
             ctx.fillStyle = "white"; ctx.textAlign = "center";
             ctx.font = "bold " + overSize + "px Inter"; 
