@@ -330,24 +330,21 @@
     const ctx = canvas.getContext('2d');
     const scoreEl = document.getElementById('score');
 
-    // CONFIGURAÇÃO DO GATINHO (SPRITE)
     const catImg = new Image();
-    catImg.src = 'Img/gatinho.png'; // Substitua pelo link ou path da imagem do gatinho
+    catImg.src = 'Img/gatinho.png'; 
 
-    let catState = 'normal'; // normal, happy, sad
+    let catState = 'normal';
     let catTimer = 0;
     let catOpacity = 1.0;
+    let gameStarted = false; 
+    let gameActive = false;  
 
-    function resizeGame() {
-        const container = document.getElementById('game-container');
-        canvas.width = container.clientWidth;
-        canvas.height = container.clientHeight;
-    }
-    window.addEventListener('resize', resizeGame);
-    resizeGame();
-
+    // --- VARIÁVEIS VISUAIS ---
+    let stars = [];
+    const numStars = 100;
+    let gridOffset = 0; 
+    
     let score = 0;
-    let gameActive = true;
     let frame = 0;
     let killedSubBosses = 0;
     let bossLevel = 0; 
@@ -355,27 +352,242 @@
     let slowMo = 1.0;
     let convoyDirection = 1; 
 
+    // --- SISTEMA DE ÁUDIO ---
+    const sfxTiro = new Audio('tiro.mp3');
+    const sfxExplosao = new Audio('explosao.wav');
+
+    const musicas = [
+        'musica 1.mp3',
+        'musica 2.mp3',
+        'musica 3.mp3',
+        'musica 4.mp3',
+        'musica 5.mp3'
+    ];
+    let musicaAtualIndex = 0;
+    let playlistAleatoria = false;
+    const playerMusica = new Audio();
+    
+    let fadeInterval = null; // Variável para controlar o fade-out
+
+    // Função segura para tocar efeitos
+    function tocarSomSeguro(audioObj, vol = 1.0) {
+        if (!audioObj) return;
+        try {
+            let som = audioObj.cloneNode();
+            som.volume = vol;
+            let playPromise = som.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(e => {});
+            }
+        } catch (e) {}
+    }
+
+    // Lógica da Playlist
+    function tocarProximaMusica() {
+        if (playlistAleatoria) {
+            let novoIndex;
+            do {
+                novoIndex = Math.floor(Math.random() * musicas.length);
+            } while (novoIndex === musicaAtualIndex);
+            musicaAtualIndex = novoIndex;
+        } else {
+            musicaAtualIndex++;
+            if (musicaAtualIndex >= musicas.length) {
+                playlistAleatoria = true;
+                tocarProximaMusica();
+                return;
+            }
+        }
+        try {
+            playerMusica.src = musicas[musicaAtualIndex];
+            playerMusica.volume = 0.4;
+            let playPromise = playerMusica.play();
+            if (playPromise !== undefined) playPromise.catch(e => {});
+        } catch(e) {}
+    }
+
+    playerMusica.addEventListener('ended', tocarProximaMusica);
+
+    // FUNÇÃO DE FADE OUT (Abaixa o volume lentamente por X milissegundos)
+    function fadeOutMusic(duration) {
+        if (fadeInterval) clearInterval(fadeInterval);
+        
+        let startVol = playerMusica.volume;
+        let steps = 50; // Quantidade de vezes que vai abaixar
+        let stepTime = duration / steps;
+        let volStep = startVol / steps;
+        let currentStep = 0;
+
+        fadeInterval = setInterval(() => {
+            currentStep++;
+            let newVol = startVol - (volStep * currentStep);
+            
+            if (newVol <= 0.01) {
+                playerMusica.pause();
+                playerMusica.volume = 0;
+                clearInterval(fadeInterval);
+            } else {
+                playerMusica.volume = newVol;
+            }
+        }, stepTime);
+    }
+    // --------------------------------
+
+    function resizeGame() {
+        const container = document.getElementById('game-container');
+        if(container) {
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            initStars(); 
+        }
+    }
+
+    function initStars() {
+        stars = [];
+        for(let i=0; i<numStars; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height * 0.4, // Estrelas só no céu (acima do horizonte)
+                size: Math.random() * 2,
+                speed: 0.1 + Math.random() * 0.3,
+                opacity: Math.random(),
+                blinkSpeed: Math.random() * 0.05
+            });
+        }
+    }
+
+    window.addEventListener('resize', resizeGame);
+    setTimeout(resizeGame, 50);
+
     const keys = {};
     window.addEventListener('keydown', e => keys[e.code] = true);
     window.addEventListener('keyup', e => keys[e.code] = false);
 
-    let touchPos = null;
-    canvas.addEventListener('touchstart', e => { 
-        touchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY }; 
-        e.preventDefault(); 
-    }, {passive: false});
-    
-    canvas.addEventListener('touchmove', e => {
-        if (touchPos && gameActive) {
-            const dx = e.touches[0].clientX - touchPos.x;
-            const dy = e.touches[0].clientY - touchPos.y;
-            player.x += dx * 0.9;
-            player.y += dy * 0.9;
-            touchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    function initGame() {
+        score = 0;
+        if(scoreEl) scoreEl.innerText = score;
+        gameActive = true;
+        gameStarted = true;
+        slowMo = 1.0;
+        player.lives = 3;
+        player.x = canvas.width / 2;
+        player.y = canvas.height - 80;
+        bullets = [];
+        enemies = [];
+        particles = [];
+        catOpacity = 1.0;
+        catState = 'normal';
+
+        // --- ÁUDIO: INICIAR / RESETAR MÚSICA NO START ---
+        if (fadeInterval) clearInterval(fadeInterval); // Para qualquer fade-out acontecendo
+        
+        try {
+            if (playerMusica.paused || playerMusica.volume === 0) {
+                if (!playerMusica.src || playerMusica.src.endsWith("undefined") || playerMusica.src === "") {
+                    playerMusica.src = musicas[0];
+                    musicaAtualIndex = 0;
+                    playlistAleatoria = false;
+                }
+                playerMusica.volume = 0.4; // Reseta o volume pro padrão
+                let playPromise = playerMusica.play();
+                if (playPromise !== undefined) playPromise.catch(e => {});
+            } else {
+                // Se já tava tocando e a pessoa deu restart rápido
+                playerMusica.volume = 0.4; 
+            }
+        } catch(e) {}
+    }
+
+    canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        if (!gameStarted) {
+            if (mouseX > canvas.width/2 - 70 && mouseX < canvas.width/2 + 70 &&
+                mouseY > canvas.height/2 - 25 && mouseY < canvas.height/2 + 25) {
+                initGame();
+            }
         }
-        e.preventDefault();
-    }, {passive: false});
-    canvas.addEventListener('touchend', () => touchPos = null);
+        if (gameStarted && !gameActive && particles.length === 0) {
+            if (mouseX > canvas.width/2 - 70 && mouseX < canvas.width/2 + 70 &&
+                mouseY > canvas.height/2 + 100 && mouseY < canvas.height/2 + 150) {
+                initGame();
+            }
+        }
+    });
+
+    // --- NOVO FUNDO RETROWAVE 3D + RITMO ---
+    function drawBackgroundEffects() {
+        // Céu (Degradê escuro)
+        let grad = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.4);
+        grad.addColorStop(0, "#050011");
+        grad.addColorStop(1, "#1a0033");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height * 0.4);
+
+        // Estrelas no céu
+        ctx.fillStyle = "white";
+        stars.forEach(s => {
+            s.x -= s.speed * slowMo; // Estrelas movem de lado pra dar sensação de voo
+            s.opacity += s.blinkSpeed;
+            if (s.opacity > 1 || s.opacity < 0) s.blinkSpeed *= -1;
+            if (s.x < 0) s.x = canvas.width;
+            
+            ctx.globalAlpha = Math.abs(s.opacity);
+            ctx.fillRect(s.x, s.y, s.size, s.size);
+        });
+        ctx.globalAlpha = 1.0;
+
+        // --- GRADE 3D ---
+        ctx.save();
+        const vpX = canvas.width / 2; // Ponto de fuga X (Centro)
+        const vpY = canvas.height * 0.4; // Ponto de fuga Y (Horizonte)
+        
+        // Simulação de batida/ritmo (Pulso + Mudança de cor)
+        const beatSpeed = 0.15;
+        const beatPulse = Math.abs(Math.sin(frame * beatSpeed)); // Vai de 0 a 1
+        const currentHue = (280 + (frame * 0.2)) % 360; // Gira as cores pelas tonalidades de roxo/rosa/azul
+        
+        ctx.strokeStyle = `hsla(${currentHue}, 100%, 60%, ${0.3 + (beatPulse * 0.5)})`;
+        ctx.lineWidth = 1 + (beatPulse * 1.5); // Linha fica mais grossa na "batida"
+
+        // Linhas Verticais (Perspectiva)
+        ctx.beginPath();
+        const numVerticals = 30;
+        const spacingBottom = 120; // Distância entre linhas na parte de baixo
+        for (let i = -numVerticals; i <= numVerticals; i++) {
+            let xAtBottom = vpX + (i * spacingBottom);
+            ctx.moveTo(vpX, vpY);
+            ctx.lineTo(xAtBottom, canvas.height);
+        }
+        ctx.stroke();
+
+        // Linhas Horizontais (Vindo em direção à tela)
+        const numHorizontals = 20;
+        const speed = 4 * slowMo;
+        gridOffset = (gridOffset + speed) % 100;
+        
+        ctx.beginPath();
+        for (let i = 0; i < numHorizontals; i++) {
+            // Cálculo exponencial para dar o efeito 3D de distância
+            let normalizedPos = (i * 100 + gridOffset) / (numHorizontals * 100); 
+            let y = vpY + Math.pow(normalizedPos, 3) * (canvas.height - vpY);
+
+            if (y > vpY) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+            }
+        }
+        ctx.stroke();
+
+        // Linha do Horizonte Brilhante
+        ctx.shadowBlur = 15 + (beatPulse * 10);
+        ctx.shadowColor = `hsl(${currentHue}, 100%, 50%)`;
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, vpY - 2, canvas.width, 3);
+        
+        ctx.restore();
+    }
 
     function getRandomNeonColor() {
         const colors = ["#ff00ff", "#00ffff", "#ffff00", "#ff0000", "#00ff00", "#ff8000"];
@@ -392,35 +604,37 @@
         bullets = bullets.filter(b => b.isPlayer);
     }
 
-    // FUNÇÃO PARA DESENHAR O GATINHO
     function drawCatHUD() {
         if (catOpacity <= 0) return;
-
         ctx.save();
         ctx.globalAlpha = catOpacity;
-        
-        // Define qual parte da imagem original pegar (assumindo divisão em 3 partes iguais)
-        let sx = 0; // x inicial na imagem original
-        const sw = catImg.width / 3; // largura de cada expressão
+        const sw = catImg.width / 3;
         const sh = catImg.height;
-
+        let sx = 0;
         if (catState === 'happy') sx = sw;
         else if (catState === 'sad') sx = sw * 2;
-
-        const displaySize = 80; // Tamanho do gatinho na tela
+        const displaySize = 80;
         const padding = 20;
-        
-        ctx.drawImage(catImg, sx, 0, sw, sh, padding, canvas.height - displaySize - padding, displaySize, displaySize);
+        const hudX = padding;
+        const hudY = canvas.height - displaySize - padding;
+        ctx.drawImage(catImg, sx, 0, sw, sh, hudX, hudY, displaySize, displaySize);
+        const barW = 20; const barH = 8; const barSpacing = 5;
+        const barStartY = hudY + displaySize + 8;
+        for (let i = 0; i < 3; i++) {
+            ctx.lineWidth = 2;
+            if (i < player.lives) {
+                ctx.fillStyle = "#ff0044";
+                ctx.fillRect(hudX + (i * (barW + barSpacing)), barStartY, barW, barH);
+            }
+            ctx.strokeStyle = "#ff0044";
+            ctx.strokeRect(hudX + (i * (barW + barSpacing)), barStartY, barW, barH);
+        }
         ctx.restore();
-
-        // Lógica de tempo para voltar ao normal
         if (catTimer > 0) {
             catTimer--;
             if (catTimer <= 0 && gameActive) catState = 'normal';
         }
-
-        // Lógica de desaparecer ao morrer
-        if (!gameActive) {
+        if (gameStarted && !gameActive) {
             catState = 'sad';
             catOpacity -= 0.01;
         }
@@ -461,7 +675,7 @@
             this.color = "#00f2ff";
         }
         draw() {
-            if (!gameActive && slowMo < 1) return;
+            if (!gameActive && slowMo < 1 && gameStarted) return;
             ctx.lineWidth = 2;
             ctx.strokeStyle = this.color;
             ctx.strokeRect(this.x - 6, this.y - 10, 12, 15);
@@ -477,10 +691,12 @@
             if (keys['KeyS'] || keys['ArrowDown']) this.y += this.speed;
             this.x = Math.max(25, Math.min(canvas.width - 25, this.x));
             this.y = Math.max(25, Math.min(canvas.height - 25, this.y));
-
+            
             if (frame % 25 === 0) { 
                 bullets.push(new Bullet(this.x - 18, this.y, -6, true));
                 bullets.push(new Bullet(this.x + 18, this.y, -6, true));
+                
+                tocarSomSeguro(sfxTiro, 0.15);
             }
         }
     }
@@ -580,17 +796,19 @@
     }
 
     const player = new Player();
-    let bullets = [];
-    let enemies = [];
-    let particles = [];
+    let bullets = []; let enemies = []; let particles = [];
 
     function triggerDeath() {
         if (!gameActive) return;
         gameActive = false;
         slowMo = 0.15; 
-        for(let i=0; i<100; i++) {
-            particles.push(new Particle(player.x, player.y, getRandomNeonColor()));
-        }
+        
+        tocarSomSeguro(sfxExplosao, 0.5);
+        
+        // --- INICIA O FADE OUT DA MÚSICA (2500ms = 2.5 segundos) ---
+        fadeOutMusic(2500);
+
+        for(let i=0; i<100; i++) particles.push(new Particle(player.x, player.y, getRandomNeonColor()));
         setCatFace('sad', 9999);
     }
 
@@ -601,7 +819,6 @@
         if (killedSubBosses >= 18 && bossLevel < 3) { nextBoss = 1; currentBLevel = 3; }
         else if (killedSubBosses >= 9 && bossLevel < 2) { nextBoss = 1; currentBLevel = 2; }
         else if (killedSubBosses >= 3 && bossLevel < 1) { nextBoss = 1; currentBLevel = 1; }
-
         if (nextBoss > 0) {
             clearScreen();
             enemies = enemies.filter(e => e.isBoss); 
@@ -609,7 +826,6 @@
             bossLevel = currentBLevel;
             return;
         }
-        
         if (score > 0 && score % 1500 < 50 && !enemies.some(e => e.isBoss)) {
             if (!enemies.some(e => e.type === 'subboss')) {
                 clearScreen();
@@ -617,7 +833,6 @@
                 enemies.push(new Enemy('subboss', 0, 0, sLevel));
             }
         }
-
         if (!enemies.some(e => e.isBoss)) {
             if (frame % 250 === 0) enemies.push(new Enemy('meteor'));
             if (frame % 650 === 0) {
@@ -626,7 +841,7 @@
                 let ry = 80 + Math.random() * 100;
                 let s = new Enemy('ship', startX, vx);
                 s.y = ry; s.speed = 0; enemies.push(s);
-                convoyDirection *= -1;
+                convoyDirection *= -1; 
             }
         }
     }
@@ -636,9 +851,29 @@
         return dist < ((a.w || 30)/2 + (b.w || 15)/2);
     }
 
+    function drawButton(text, y) {
+        ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 3;
+        ctx.strokeRect(canvas.width/2 - 70, y - 25, 140, 50);
+        ctx.fillStyle = "white"; ctx.font = "bold 20px Inter";
+        ctx.fillText(text, canvas.width/2, y + 7);
+    }
+
     function gameLoop() {
-        ctx.fillStyle = "rgba(0,0,0,0.4)";
+        if (!canvas.width || !canvas.height) {
+            requestAnimationFrame(gameLoop);
+            return;
+        }
+
+        ctx.fillStyle = "black"; 
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        drawBackgroundEffects();
+
+        if (!gameStarted) {
+            ctx.fillStyle = "white"; ctx.textAlign = "center";
+            ctx.font = "bold 50px Inter"; ctx.fillText("SPACE NEON", canvas.width/2, canvas.height/2 - 80);
+            drawButton("START", canvas.height/2);
+        }
 
         if (gameActive) {
             player.update();
@@ -646,7 +881,7 @@
             spawn();
         }
 
-        drawCatHUD();
+        if (gameStarted) drawCatHUD();
 
         particles.forEach((p, i) => {
             p.update(); p.draw();
@@ -657,7 +892,10 @@
             b.update(); b.draw();
             if (!b.isPlayer && gameActive && checkCollision(b, player)) {
                 player.lives--;
-                setCatFace('sad', 60); // Triste por 1s (60 fps)
+                setCatFace('sad', 120);
+                
+                tocarSomSeguro(sfxExplosao, 0.4);
+
                 if (player.lives <= 0) triggerDeath();
                 return false;
             }
@@ -668,7 +906,10 @@
             e.update(); e.draw();
             if (gameActive && checkCollision(player, e)) {
                 player.lives--;
-                setCatFace('sad', 60);
+                setCatFace('sad', 120);
+                
+                tocarSomSeguro(sfxExplosao, 0.4);
+
                 if (player.lives <= 0) triggerDeath();
                 return false;
             }
@@ -677,12 +918,15 @@
                     e.hp--;
                     bullets.splice(bi, 1);
                     if (e.hp <= 0) {
+
+                        tocarSomSeguro(sfxExplosao, 0.25);
+
                         if (e.isBoss) {
                             if (e.type === 'subboss') killedSubBosses++;
-                            setCatFace('happy', 120); // Feliz por 2s (120 fps)
+                            setCatFace('happy', 120);
                         }
                         score += (e.type === 'boss' ? 1000 : (e.type === 'subboss' ? 300 : 50));
-                        scoreEl.innerText = score;
+                        if(scoreEl) scoreEl.innerText = score;
                         for(let j=0; j<20; j++) particles.push(new Particle(e.x, e.y, e.color));
                     }
                 }
@@ -690,13 +934,16 @@
             return e.hp > 0 && e.y < canvas.height + 150 && e.x > -200 && e.x < canvas.width + 200;
         });
 
-        if (!gameActive && particles.length === 0) {
+        if (gameStarted && !gameActive && particles.length === 0) {
             ctx.fillStyle = "white"; ctx.textAlign = "center";
             ctx.font = "bold 40px Inter"; ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2);
             ctx.font = "20px Inter"; ctx.fillText("SCORE: " + score, canvas.width/2, canvas.height/2 + 50);
+            drawButton("RESTART", canvas.height/2 + 125);
         }
+
         frame++;
         requestAnimationFrame(gameLoop);
     }
+    
     gameLoop();
 </script>
