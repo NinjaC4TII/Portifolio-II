@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0", maximum-scale=1.0, user-scalable=no>
     <title>Fagner Caeres | Automação & IIoT</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -367,9 +367,8 @@
     let playlistAleatoria = false;
     const playerMusica = new Audio();
     
-    let fadeInterval = null; // Variável para controlar o fade-out
+    let fadeInterval = null;
 
-    // Função segura para tocar efeitos
     function tocarSomSeguro(audioObj, vol = 1.0) {
         if (!audioObj) return;
         try {
@@ -382,7 +381,6 @@
         } catch (e) {}
     }
 
-    // Lógica da Playlist
     function tocarProximaMusica() {
         if (playlistAleatoria) {
             let novoIndex;
@@ -408,12 +406,11 @@
 
     playerMusica.addEventListener('ended', tocarProximaMusica);
 
-    // FUNÇÃO DE FADE OUT (Abaixa o volume lentamente por X milissegundos)
     function fadeOutMusic(duration) {
         if (fadeInterval) clearInterval(fadeInterval);
         
         let startVol = playerMusica.volume;
-        let steps = 50; // Quantidade de vezes que vai abaixar
+        let steps = 50; 
         let stepTime = duration / steps;
         let volStep = startVol / steps;
         let currentStep = 0;
@@ -431,7 +428,6 @@
             }
         }, stepTime);
     }
-    // --------------------------------
 
     function resizeGame() {
         const container = document.getElementById('game-container');
@@ -447,7 +443,7 @@
         for(let i=0; i<numStars; i++) {
             stars.push({
                 x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height * 0.4, // Estrelas só no céu (acima do horizonte)
+                y: Math.random() * canvas.height * 0.4,
                 size: Math.random() * 2,
                 speed: 0.1 + Math.random() * 0.3,
                 opacity: Math.random(),
@@ -478,8 +474,7 @@
         catOpacity = 1.0;
         catState = 'normal';
 
-        // --- ÁUDIO: INICIAR / RESETAR MÚSICA NO START ---
-        if (fadeInterval) clearInterval(fadeInterval); // Para qualquer fade-out acontecendo
+        if (fadeInterval) clearInterval(fadeInterval); 
         
         try {
             if (playerMusica.paused || playerMusica.volume === 0) {
@@ -488,16 +483,16 @@
                     musicaAtualIndex = 0;
                     playlistAleatoria = false;
                 }
-                playerMusica.volume = 0.4; // Reseta o volume pro padrão
+                playerMusica.volume = 0.4; 
                 let playPromise = playerMusica.play();
                 if (playPromise !== undefined) playPromise.catch(e => {});
             } else {
-                // Se já tava tocando e a pessoa deu restart rápido
                 playerMusica.volume = 0.4; 
             }
         } catch(e) {}
     }
 
+    // --- CONTROLES DE MOUSE ---
     canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
@@ -516,19 +511,51 @@
         }
     });
 
-    // --- NOVO FUNDO RETROWAVE 3D + RITMO ---
+    // --- CONTROLES DE TOQUE (MOBILE) ---
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault(); 
+        const rect = canvas.getBoundingClientRect();
+        const touchX = e.touches[0].clientX - rect.left;
+        const touchY = e.touches[0].clientY - rect.top;
+
+        if (!gameStarted) {
+            if (touchX > canvas.width/2 - 70 && touchX < canvas.width/2 + 70 &&
+                touchY > canvas.height/2 - 25 && touchY < canvas.height/2 + 25) {
+                initGame();
+            }
+        } else if (gameStarted && !gameActive && particles.length === 0) {
+            if (touchX > canvas.width/2 - 70 && touchX < canvas.width/2 + 70 &&
+                touchY > canvas.height/2 + 100 && touchY < canvas.height/2 + 150) {
+                initGame();
+            }
+        } else if (gameActive) {
+            player.x = Math.max(25, Math.min(canvas.width - 25, touchX));
+            player.y = Math.max(25, Math.min(canvas.height - 25, touchY - 40));
+        }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (gameActive) {
+            const rect = canvas.getBoundingClientRect();
+            const touchX = e.touches[0].clientX - rect.left;
+            const touchY = e.touches[0].clientY - rect.top;
+            
+            player.x = Math.max(25, Math.min(canvas.width - 25, touchX));
+            player.y = Math.max(25, Math.min(canvas.height - 25, touchY - 40));
+        }
+    }, { passive: false });
+
     function drawBackgroundEffects() {
-        // Céu (Degradê escuro)
         let grad = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.4);
         grad.addColorStop(0, "#050011");
         grad.addColorStop(1, "#1a0033");
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, canvas.width, canvas.height * 0.4);
 
-        // Estrelas no céu
         ctx.fillStyle = "white";
         stars.forEach(s => {
-            s.x -= s.speed * slowMo; // Estrelas movem de lado pra dar sensação de voo
+            s.x -= s.speed * slowMo; 
             s.opacity += s.blinkSpeed;
             if (s.opacity > 1 || s.opacity < 0) s.blinkSpeed *= -1;
             if (s.x < 0) s.x = canvas.width;
@@ -538,23 +565,20 @@
         });
         ctx.globalAlpha = 1.0;
 
-        // --- GRADE 3D ---
         ctx.save();
-        const vpX = canvas.width / 2; // Ponto de fuga X (Centro)
-        const vpY = canvas.height * 0.4; // Ponto de fuga Y (Horizonte)
+        const vpX = canvas.width / 2; 
+        const vpY = canvas.height * 0.4; 
         
-        // Simulação de batida/ritmo (Pulso + Mudança de cor)
         const beatSpeed = 0.15;
-        const beatPulse = Math.abs(Math.sin(frame * beatSpeed)); // Vai de 0 a 1
-        const currentHue = (280 + (frame * 0.2)) % 360; // Gira as cores pelas tonalidades de roxo/rosa/azul
+        const beatPulse = Math.abs(Math.sin(frame * beatSpeed)); 
+        const currentHue = (280 + (frame * 0.2)) % 360; 
         
         ctx.strokeStyle = `hsla(${currentHue}, 100%, 60%, ${0.3 + (beatPulse * 0.5)})`;
-        ctx.lineWidth = 1 + (beatPulse * 1.5); // Linha fica mais grossa na "batida"
+        ctx.lineWidth = 1 + (beatPulse * 1.5); 
 
-        // Linhas Verticais (Perspectiva)
         ctx.beginPath();
         const numVerticals = 30;
-        const spacingBottom = 120; // Distância entre linhas na parte de baixo
+        const spacingBottom = 120; 
         for (let i = -numVerticals; i <= numVerticals; i++) {
             let xAtBottom = vpX + (i * spacingBottom);
             ctx.moveTo(vpX, vpY);
@@ -562,14 +586,12 @@
         }
         ctx.stroke();
 
-        // Linhas Horizontais (Vindo em direção à tela)
         const numHorizontals = 20;
         const speed = 4 * slowMo;
         gridOffset = (gridOffset + speed) % 100;
         
         ctx.beginPath();
         for (let i = 0; i < numHorizontals; i++) {
-            // Cálculo exponencial para dar o efeito 3D de distância
             let normalizedPos = (i * 100 + gridOffset) / (numHorizontals * 100); 
             let y = vpY + Math.pow(normalizedPos, 3) * (canvas.height - vpY);
 
@@ -580,7 +602,6 @@
         }
         ctx.stroke();
 
-        // Linha do Horizonte Brilhante
         ctx.shadowBlur = 15 + (beatPulse * 10);
         ctx.shadowColor = `hsl(${currentHue}, 100%, 50%)`;
         ctx.fillStyle = "white";
@@ -606,6 +627,9 @@
 
     function drawCatHUD() {
         if (catOpacity <= 0) return;
+        // PROTEÇÃO: Não tenta desenhar o gato se a imagem não tiver carregado
+        if (!catImg.complete || catImg.width === 0) return; 
+
         ctx.save();
         ctx.globalAlpha = catOpacity;
         const sw = catImg.width / 3;
@@ -805,7 +829,6 @@
         
         tocarSomSeguro(sfxExplosao, 0.5);
         
-        // --- INICIA O FADE OUT DA MÚSICA (2500ms = 2.5 segundos) ---
         fadeOutMusic(2500);
 
         for(let i=0; i<100; i++) particles.push(new Particle(player.x, player.y, getRandomNeonColor()));
@@ -870,8 +893,11 @@
         drawBackgroundEffects();
 
         if (!gameStarted) {
+            // TEXTO RESPONSIVO: Fica com maximo de 50px no PC, mas encolhe no celular
+            let titleSize = Math.min(50, canvas.width / 7); 
             ctx.fillStyle = "white"; ctx.textAlign = "center";
-            ctx.font = "bold 50px Inter"; ctx.fillText("SPACE NEON", canvas.width/2, canvas.height/2 - 80);
+            ctx.font = "bold " + titleSize + "px Inter"; 
+            ctx.fillText("SPACE NEON", canvas.width/2, canvas.height/2 - 80);
             drawButton("START", canvas.height/2);
         }
 
@@ -935,9 +961,13 @@
         });
 
         if (gameStarted && !gameActive && particles.length === 0) {
+            // TEXTO RESPONSIVO PARA O GAME OVER TAMBÉM
+            let overSize = Math.min(40, canvas.width / 8); 
             ctx.fillStyle = "white"; ctx.textAlign = "center";
-            ctx.font = "bold 40px Inter"; ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2);
-            ctx.font = "20px Inter"; ctx.fillText("SCORE: " + score, canvas.width/2, canvas.height/2 + 50);
+            ctx.font = "bold " + overSize + "px Inter"; 
+            ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2);
+            ctx.font = "20px Inter"; 
+            ctx.fillText("SCORE: " + score, canvas.width/2, canvas.height/2 + 50);
             drawButton("RESTART", canvas.height/2 + 125);
         }
 
