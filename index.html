@@ -119,6 +119,34 @@
         .points-display { font-weight: bold; font-size: 1.2rem; color: #fff; }
 
         @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } .flip-card { height: 450px; } #game-container { height: 400px; } }
+        .cv-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .cv-link img {
+            width: 35px;
+            transition: transform 0.3s;
+        }
+
+        .tooltip-text {
+            display: none; 
+            color: white;
+            margin-left: 10px;
+            font-size: 14px;
+            font-family: sans-serif;
+        }
+
+        .cv-link:hover .tooltip-text {
+            display: inline;
+        }
+
+        .cv-link:hover img {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
